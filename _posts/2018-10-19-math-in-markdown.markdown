@@ -15,7 +15,7 @@ $$x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}$$
 |--|--|
 |`$\sum_{i=0}^N\int_{a}^{b}g(t,i)\text{d}t$`  |\\(\sum_{i=0}^N\int_{a}^{b}g(t,i)\text{d}t\\)|
 |`$\sum_{i=0}$`|\\(\sum_{i=0}^{N}\\)|
-|`$\int_{a}^{b}t$`  |\\(\int_{a}^{b}\text{d}t           mmm\\)|
+|`$\int_{a}^{b}t$`  |\\(\int_{a}^{b}\text{d}t\\)|
 |`$\vec{a}$`  |\\(\vec{a}\cdot\vec{b}\\)|
 |`$\lim_{a\to{0}}$`|\\(\lim_{a\to{0}}\\)|
 |`$\lim_{n\rightarrow+\infty}$`|\\(\lim_{n\rightarrow+\infty}\\)|
