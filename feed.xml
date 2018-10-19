@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-10-19T22:18:37+08:00</updated><id>http://localhost:4000/</id><title type="html">十三</title><subtitle>everyday different.</subtitle><entry><title type="html">各种排序算法</title><link href="http://localhost:4000/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html" rel="alternate" type="text/html" title="各种排序算法" /><published>2018-10-19T00:00:00+08:00</published><updated>2018-10-19T00:00:00+08:00</updated><id>http://localhost:4000/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95</id><content type="html" xml:base="http://localhost:4000/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html">&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML&quot; async=&quot;&quot;&gt;&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;e^{\pi{i}}+1=0&lt;/script&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;insert sort
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  void insertSort(int A[],int n){
+      for(int i=1;i&amp;lt;n;i++){
+          int key=A[i];
+          int j=i-1;
+          while(j&amp;gt;=0 &amp;amp;&amp;amp; key&amp;lt;A[j]){
+              A[j+1]=A[j];
+              j--;
+          }
+          A[j+1]=key;
+      }
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;select sort
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  void selectSort(int A[],int n){
+      for(int i=0;i&amp;lt;n-1;i++){
+          int k=i;
+          for(int j=i+1;j&amp;lt;n;j++){
+              if(A[j]&amp;lt;A[k])
+                  k=j;
+          }
+          if(k!=i){
+              int tmp=A[k];
+              A[k]=A[i];
+              A[i]=tmp;
+          }
+      }
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;bubble sort
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  void bubbleSort(int A[],int n){
+      for(int i=1;i&amp;lt;n;i++){
+          int no_swapped=1;
+          for(int j=n-1;j&amp;gt;=i;j--)
+              if(A[j-1]&amp;gt;A[j]){
+                  int tmp=A[j];
+                  A[j]=A[j-1];
+                  A[j-1]=tmp;
+                  no_swapped=0;
+              }
+          if(no_swapped)
+              break;
+      }
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;quick sort
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  int partition(itemType a[],int l,int r){
+      ////TODO:相等元素的处理，避免O(n2);pivot选择随机数进行比较；
+      //dualpivotquicksort（java jdk1.7库的sort研究）
+      itemType pivot;
+      if(r-l+1&amp;gt;=27){
+          //三取中:
+          int mid=l+(r-l)/2;
+          if(a[mid]&amp;lt;a[l]){
+              pivot=a[mid];
+              a[mid]=a[l];
+              a[l]=pivot;
+          }
+          if(a[r]&amp;lt;a[l]){
+              pivot=a[r];
+              a[r]=a[l];
+              a[l]=pivot;
+          }    
+          if(a[mid]&amp;lt;a[r]){
+              pivot=a[mid];
+              a[mid]=a[r];
+              a[r]=pivot;
+          }
+      }//三取中    
+      pivot=a[r];
+      int i=l-1;
+      int j=l;
+      while(j&amp;lt;r){
+          if(cmp(a[j],pivot)){
+              i++;
+              //if(i!=j){
+                  itemType tmp=a[i];
+                  a[i]=a[j];
+                  a[j]=tmp;
+              //}
+          }
+          j++;
+      }
+      //if(i+1!=r){
+          itemType tmp=a[i+1];
+          a[i+1]=a[r];
+          a[r]=tmp;
+      //}
+      return i+1;
+  }
+  void hybridQuickSort(itemType a[],int l,int r){
+      if(r-l+1&amp;lt;=THRESHOLD){//THRESHOLD=12 or 16?
+          insertSort(a,l,r);
+          return;
+      }
+      while(l&amp;lt;r){
+          int q=partition(a,l,r);
+          hybridQuickSort(a,l,q-1);
+          l=q+1;
+      }
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;shell sort
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  void shellSort2(int A[],int n){
+      /*
+          递增序列采用表格方式给出，其倒序为1，4，13，40，121，364...
+          递增训练的构造还有其他，可参考
+          http://www.cs.princeton.edu/~rs/shell/driver.c
+          和
+          http://www.cs.princeton.edu/~rs/shell/paperF.pdf
+      */
+      if(n&amp;lt;=1) return;
+      int incs[]={1743392200,581130733,193710244,64570081,21523360,7174453,2391484,
+                  797161,265720,88573,29524,9841,3280,1093,364,121,40,13,4,1};
+      int k=0,r=19;
+      while(k&amp;lt;=r){
+          int mid=k+(r-k)/2;
+          if(n&amp;gt;incs[mid])
+              r=mid-1;
+          else
+              k=mid+1;
+      }
+      for(;k&amp;lt;20;k++){
+          int h=incs[k];
+          for(int i=h;i&amp;lt;n;i++){
+              int key=A[i];
+              int j=i-h;
+              while(0&amp;lt;=j &amp;amp;&amp;amp; key&amp;lt;A[j]){
+                  A[j+h]=A[j];
+                  j-=h;
+              }
+              A[j+h]=key;
+          }
+      }    
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Math In Markdown</title><link href="http://localhost:4000/2018/10/19/math-in-markdown.html" rel="alternate" type="text/html" title="Math In Markdown" /><published>2018-10-19T00:00:00+08:00</published><updated>2018-10-19T00:00:00+08:00</updated><id>http://localhost:4000/2018/10/19/math-in-markdown</id><content type="html" xml:base="http://localhost:4000/2018/10/19/math-in-markdown.html">&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML&quot; async=&quot;&quot;&gt;&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;e^{\pi{i}}+1=0&lt;/script&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;&lt;strong&gt;输入&lt;/strong&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;strong&gt;显示&lt;/strong&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\sum_{i=0}^N\int_{a}^{b}g(t,i)\text{d}t\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\sum_{i=0}^N\int_{a}^{b}g(t,i)\text{d}t\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\sum_{i=0}\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\sum_{i=0}^{N}\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\int_{a}^{b}t$&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\int_{a}^{b}\text{d}t\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\vec{a}\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\vec{a}\cdot\vec{b}\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\lim_{a\to{0}}\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\lim_{a\to{0}}\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\lim_{n\rightarrow+\infty}\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\lim_{n\rightarrow+\infty}\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\prod{i^2}\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\prod{i^2}\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\frac{a+b}{c+d}\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\frac{a+b}{c+d}\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\cdots\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\cdots\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\((X_i-\overline{X})^2\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\((X_i-\overline{X})^2\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\sqrt{x} \quad\sqrt[n]{y}\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\sqrt{x} \quad\sqrt[n]{y}\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\partial  \angle  \triangle\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\partial  \angle  \triangle\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\le \quad \ge \quad \ne\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\le \quad \ge \quad \ne\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\approx \sim \subseteq \in  \notin\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\approx \sim \subseteq \in  \notin\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\times  \div  \pm\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\times  \div  \pm\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\\(\Rightarrow  \rightarrow  \infty\\)&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;\(\Rightarrow  \rightarrow  \infty\)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;strong&gt;希腊字母&lt;/strong&gt;&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;&lt;strong&gt;大写&lt;/strong&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;strong&gt;显示&lt;/strong&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;strong&gt;小写&lt;/strong&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;strong&gt;显示&lt;/strong&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\alpha\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\beta\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;–&lt;/td&gt;
+      &lt;td&gt;\(\Gamma\)&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\gamma\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\Delta\)&lt;/td&gt;
+      &lt;td&gt;–&lt;/td&gt;
+      &lt;td&gt;\(\delta\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\epsilon\) \(\varepsilon\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\zeta\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\eta\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\Theta\)&lt;/td&gt;
+      &lt;td&gt;–&lt;/td&gt;
+      &lt;td&gt;\(\theta\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\iota\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\kappa\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\Lambda\)&lt;/td&gt;
+      &lt;td&gt;–&lt;/td&gt;
+      &lt;td&gt;\(\lambda\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\mu\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\nu\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\Xi\)&lt;/td&gt;
+      &lt;td&gt;–&lt;/td&gt;
+      &lt;td&gt;\(\xi\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\omicron\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\Pi\)&lt;/td&gt;
+      &lt;td&gt;–&lt;/td&gt;
+      &lt;td&gt;\(\pi\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\rho\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\Sigma\)&lt;/td&gt;
+      &lt;td&gt;–&lt;/td&gt;
+      &lt;td&gt;\(\sigma\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\tau\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\Upsilon\)&lt;/td&gt;
+      &lt;td&gt;–&lt;/td&gt;
+      &lt;td&gt;\(\upsilon\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\Phi\)&lt;/td&gt;
+      &lt;td&gt;–&lt;/td&gt;
+      &lt;td&gt;\(\phi\)  \(\varphi\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\chi\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\Psi\)&lt;/td&gt;
+      &lt;td&gt;–&lt;/td&gt;
+      &lt;td&gt;\(\psi\)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\Omega\)&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;\(\omega\)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</content><author><name></name></author><summary type="html"></summary></entry></feed>
