@@ -1,3 +1,5 @@
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
 **各种排序算法**
   
   $e^{\pi{i}}+1=0$
