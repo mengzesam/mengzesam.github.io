@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>各种排序算法</title>
+<meta name="generator" content="Jekyll v3.7.4" />
+<meta property="og:title" content="各种排序算法" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="记录生活点滴，追忆时光" />
+<meta property="og:description" content="记录生活点滴，追忆时光" />
+<link rel="canonical" href="/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html" />
+<meta property="og:url" content="/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-10-19T00:00:00+08:00" />
+<script type="application/ld+json">
+{"datePublished":"2018-10-19T00:00:00+08:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html"},"url":"/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html","headline":"各种排序算法","description":"记录生活点滴，追忆时光","dateModified":"2018-10-19T00:00:00+08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="$$e^{\pi{i}}+1=0$$" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">$$e^{\pi{i}}+1=0$$</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">各种排序算法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-10-19T00:00:00+08:00" itemprop="datePublished">Oct 19, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async=""></script>
+
+<ul>
+  <li>insert sort
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  void insertSort(int A[],int n){
+      for(int i=1;i&lt;n;i++){
+          int key=A[i];
+          int j=i-1;
+          while(j&gt;=0 &amp;&amp; key&lt;A[j]){
+              A[j+1]=A[j];
+              j--;
+          }
+          A[j+1]=key;
+      }
+  }
+</code></pre></div>    </div>
+  </li>
+  <li>select sort
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  void selectSort(int A[],int n){
+      for(int i=0;i&lt;n-1;i++){
+          int k=i;
+          for(int j=i+1;j&lt;n;j++){
+              if(A[j]&lt;A[k])
+                  k=j;
+          }
+          if(k!=i){
+              int tmp=A[k];
+              A[k]=A[i];
+              A[i]=tmp;
+          }
+      }
+  }
+</code></pre></div>    </div>
+  </li>
+  <li>bubble sort
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  void bubbleSort(int A[],int n){
+      for(int i=1;i&lt;n;i++){
+          int no_swapped=1;
+          for(int j=n-1;j&gt;=i;j--)
+              if(A[j-1]&gt;A[j]){
+                  int tmp=A[j];
+                  A[j]=A[j-1];
+                  A[j-1]=tmp;
+                  no_swapped=0;
+              }
+          if(no_swapped)
+              break;
+      }
+  }
+</code></pre></div>    </div>
+  </li>
+  <li>quick sort
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  int partition(itemType a[],int l,int r){
+      ////TODO:相等元素的处理，避免O(n2);pivot选择随机数进行比较；
+      //dualpivotquicksort（java jdk1.7库的sort研究）
+      itemType pivot;
+      if(r-l+1&gt;=27){
+          //三取中:
+          int mid=l+(r-l)/2;
+          if(a[mid]&lt;a[l]){
+              pivot=a[mid];
+              a[mid]=a[l];
+              a[l]=pivot;
+          }
+          if(a[r]&lt;a[l]){
+              pivot=a[r];
+              a[r]=a[l];
+              a[l]=pivot;
+          }    
+          if(a[mid]&lt;a[r]){
+              pivot=a[mid];
+              a[mid]=a[r];
+              a[r]=pivot;
+          }
+      }//三取中    
+      pivot=a[r];
+      int i=l-1;
+      int j=l;
+      while(j&lt;r){
+          if(cmp(a[j],pivot)){
+              i++;
+              //if(i!=j){
+                  itemType tmp=a[i];
+                  a[i]=a[j];
+                  a[j]=tmp;
+              //}
+          }
+          j++;
+      }
+      //if(i+1!=r){
+          itemType tmp=a[i+1];
+          a[i+1]=a[r];
+          a[r]=tmp;
+      //}
+      return i+1;
+  }
+  void hybridQuickSort(itemType a[],int l,int r){
+      if(r-l+1&lt;=THRESHOLD){//THRESHOLD=12 or 16?
+          insertSort(a,l,r);
+          return;
+      }
+      while(l&lt;r){
+          int q=partition(a,l,r);
+          hybridQuickSort(a,l,q-1);
+          l=q+1;
+      }
+  }
+</code></pre></div>    </div>
+  </li>
+  <li>shell sort
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  void shellSort2(int A[],int n){
+      /*
+          递增序列采用表格方式给出，其倒序为1，4，13，40，121，364...
+          递增训练的构造还有其他，可参考
+          http://www.cs.princeton.edu/~rs/shell/driver.c
+          和
+          http://www.cs.princeton.edu/~rs/shell/paperF.pdf
+      */
+      if(n&lt;=1) return;
+      int incs[]={1743392200,581130733,193710244,64570081,21523360,7174453,2391484,
+                  797161,265720,88573,29524,9841,3280,1093,364,121,40,13,4,1};
+      int k=0,r=19;
+      while(k&lt;=r){
+          int mid=k+(r-k)/2;
+          if(n&gt;incs[mid])
+              r=mid-1;
+          else
+              k=mid+1;
+      }
+      for(;k&lt;20;k++){
+          int h=incs[k];
+          for(int i=h;i&lt;n;i++){
+              int key=A[i];
+              int j=i-h;
+              while(0&lt;=j &amp;&amp; key&lt;A[j]){
+                  A[j+h]=A[j];
+                  j-=h;
+              }
+              A[j+h]=key;
+          }
+      }    
+  }
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+
+  </div><a class="u-url" href="/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html" hidden></a>
+</article>
+
+      </div>
+    </main>
+
+  </body>
+
+</html>

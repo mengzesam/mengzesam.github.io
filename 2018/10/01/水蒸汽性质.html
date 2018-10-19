@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html><head>
+<meta name="Keywords" CONTENT="IAPWS , properties of water and steam, javascript">
+
+<title>水蒸汽性质及汽机缸效率计算</title>
+
+<script language=javascript>
+//本计算源代码 copyright by mzs@jxzss 
+//作者email： mengzesam@126.com
+
+//以下代码基于IAPWS IF97 by 
+//http://www.lecad.fs.uni-lj.si/~leon/research/iapws-if97/IAPWS97.html
+//对原作者致以最真挚谢意 
+// All properties in SI units
+
+var R = 0.461526e3;      // J kg^-1 K^-1
+
+function Equation(T_reducing, p_reducing, n, J, I)
+{
+  this.T_reducing = T_reducing;
+  this.p_reducing = p_reducing; // pressure or density
+  this.n = n;          // coefficients
+  this.J = J || null;  // exponents J
+  this.I = I || null;  // exponents I
+  this.tau = function (temperature)
+  { return this.T_reducing/temperature; }
+  this.pi =  function (pressure)
+  {return pressure/this.p_reducing; }
+  this.delta = function (density)
+  {return density/this.p_reducing; }
+}
+
+
+// EQUATION DATA
+
+var equation_3_1 = new Equation( 1386, 16.53e6, // Region 1, basic equation 3.1
+  [ 0.14632971213167,     -0.84548187169114,    -0.37563603672040e1,
+    0.33855169168385e1,   -0.95791963387872,     0.15772038513228,
+   -0.16616417199501e-1,   0.81214629983568e-3,  0.28319080123804e-3,
+   -0.60706301565874e-3,  -0.18990068218419e-1, -0.32529748770505e-1,
+   -0.21841717175414e-1,  -0.52838357969930e-4, -0.47184321073267e-3,
+   -0.30001780793026e-3,   0.47661393906987e-4, -0.44141845330846e-5,
+   -0.72694996297594e-15, -0.31679644845054e-4, -0.28270797985312e-5,
+   -0.85205128120103e-9,  -0.22425281908000e-5, -0.65171222895601e-6,
+   -0.14341729937924e-12, -0.40516996860117e-6, -0.12734301741641e-8,
+   -0.17424871230634e-9,  -0.68762131295531e-18, 0.14478307828521e-19,
+    0.26335781662795e-22, -0.11947622640071e-22, 0.18228094581404e-23,
+   -0.93537087292458e-25 ],
+  [-2, -1, 0, 1, 2, 3, 4, 5, -9, -7, -1, 0, 1, 3, -3, 0, 1, 3, 17,
+  -4, 0, 6, -5, -2, 10, -8, -11, -6, -29, -31, -38, -39, -40, -41],
+  [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3,
+   4, 4, 4, 5, 8, 8, 21, 23, 29, 30, 31, 32]
+  );
+
+// Region 2
+
+var equation_3_9 = new Equation ( 540, 1e6, // Region 2, equation 3.9
+ [ -0.96927686500217E+01,  0.10086655968018E+02, -0.56087911283020E-02,
+    0.71452738081455E-01, -0.40710498223928E+00,  0.14240819171444E+01, 
+   -0.43839511319450E+01, -0.28408632460772E+00,  0.21268463753307E-01],
+ [0, 1, -5, -4, -3, -2, -1, 2,  3]);
+
+var equation_3_10 = new Equation ( 540, 1e6, // Region 2, eq 3.10, residual
+ [ -0.17731742473213E-02,  -0.17834862292358E-01,  -0.45996013696365E-01, 
+   -0.57581259083432E-01,  -0.50325278727930E-01,  -0.33032641670203E-04, 
+   -0.18948987516315E-03,  -0.39392777243355E-02,  -0.43797295650573E-01, 
+   -0.26674547914087E-04,   0.20481737692309E-07,   0.43870667284435E-06, 
+   -0.32277677238570E-04,  -0.15033924542148E-02,  -0.40668253562649E-01, 
+   -0.78847309559367E-09,   0.12790717852285E-07,   0.48225372718507E-06, 
+    0.22922076337661E-05,  -0.16714766451061E-10,  -0.21171472321355E-02, 
+   -0.23895741934104E+02,  -0.59059564324270E-17,  -0.12621808899101E-05, 
+   -0.38946842435739E-01,   0.11256211360459E-10,  -0.82311340897998E+01, 
+    0.19809712802088E-07,   0.10406965210174E-18,  -0.10234747095929E-12, 
+   -0.10018179379511E-08,  -0.80882908646985E-10,   0.10693031879409E+00, 
+   -0.33662250574171E+00,   0.89185845355421E-24,   0.30629316876232E-12, 
+   -0.42002467698208E-05,  -0.59056029685639E-25,   0.37826947613457E-05, 
+   -0.12768608934681E-14,   0.73087610595061E-28,   0.55414715350778E-16, 
+   -0.94369707241210E-06 ],
+ [0, 1, 2, 3, 6, 1, 2, 4, 7, 36, 0, 1, 3, 6, 35, 1, 2, 3, 7, 3, 16, 35, 0, 11,
+ 25, 8, 36, 13, 4, 10, 14, 29, 50, 57, 20, 35, 48, 21, 53, 39, 26, 40, 58 ],
+ [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5, 6, 6, 6, 7, 7, 7,
+   8, 8, 9, 10, 10, 10, 16, 16, 18, 20, 20, 20, 21, 22, 23, 24, 24, 24 ]
+);
+
+// Region 3, basic equation 3.21 , note that second parameter is density
+var equation_3_21 = new Equation (647.096, 322, 
+ [ 0.10658070028513E+01, -0.15732845290239E+02,  0.20944396974307E+02,
+  -0.76867707878716E+01,  0.26185947787954E+01, -0.28080781148620E+01,
+   0.12053369696517E+01, -0.84566812812502E-02, -0.12654315477714E+01,
+  -0.11524407806681E+01,  0.88521043984318E+00, -0.64207765181607E+00,
+   0.38493460186671E+00, -0.85214708824206E+00,  0.48972281541877E+01,
+  -0.30502617256965E+01,  0.39420536879154E-01,  0.12558408424308E+00,
+  -0.27999329698710E+00,  0.13899799569460E+01, -0.20189915023570E+01,
+  -0.82147637173963E-02, -0.47596035734923E+00,  0.43984074473500E-01,
+  -0.44476435428739E+00,  0.90572070719733E+00,  0.70522450087967E+00,
+   0.10770512626332E+00, -0.32913623258954E+00, -0.50871062041158E+00,
+  -0.22175400873096E-01,  0.94260751665092E-01,  0.16436278447961E+00,
+  -0.13503372241348E-01, -0.14834345352472E-01,  0.57922953628084E-03,
+   0.32308904703711E-02,  0.80964802996215E-04, -0.16557679795037E-03,
+  -0.44923899061815E-04 ],
+  [0, 0, 1, 2, 7, 10, 12, 23, 2, 6, 15, 17, 0, 2, 6, 7, 22, 26, 0, 2, 4,
+  16, 26, 0, 2, 4, 26, 1, 3, 26, 0, 2, 26, 2, 26, 2, 26, 0, 1, 26],
+  [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3,
+   4, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 8, 9, 9, 10, 10, 11]
+);
+
+
+// REGION 1
+// specific volume
+function v_1(T, p)
+{
+  var dg_pi = 0.0;
+  
+  with (equation_3_1)
+    {
+      for (var i = 0; i < 34; i++)
+        dg_pi += -n[i] * I[i] * Math.pow(7.1 - pi(p), I[i] - 1)
+          * Math.pow(tau(T) - 1.222, J[i]);
+      
+      return pi(p) * dg_pi * R * T / p;
+    }
+}
+
+
+// specific internal energy
+function u_1(T, p)
+{
+  var dg_pi = 0.0;
+  var dg_tau = 0.0;
+  with ( equation_3_1 )
+    {
+      for (var i = 0; i < 34; i++)
+        {
+          dg_pi += -n[i] * I[i] * Math.pow(7.1 - pi(p), I[i] - 1)
+            * Math.pow(tau(T) - 1.222, J[i]);
+          dg_tau += n[i] * Math.pow( 7.1 - pi(p), I[i])
+            * J[i] * Math.pow(tau(T) - 1.222, J[i] - 1);
+        }
+      return R * T * (tau(T) * dg_tau - pi(p) * dg_pi);
+    }
+}
+
+
+
+// specific entropy
+function s_1(T, p)
+{
+  var dg = 0.0;
+  var dg_tau = 0.0;
+  with ( equation_3_1 )
+    {
+      for ( var i = 0; i < 34; i++)
+        {
+          dg += n[i] * Math.pow( 7.1 - pi(p), I[i] )
+            * Math.pow(tau(T) - 1.222, J[i]);
+          dg_tau += n[i] * Math.pow( 7.1 - pi(p), I[i])
+            * J[i] * Math.pow(tau(T) - 1.222, J[i] - 1);
+        }
+      return R * (tau(T) * dg_tau - dg);
+    }
+}
+
+
+// specific_enthalpy
+function h_1(T, p)
+{
+  var dg_tau = 0.0;
+  with ( equation_3_1 )
+    {
+      for (var i = 0; i < 34; i++)
+        dg_tau += n[i] * Math.pow( 7.1 - pi(p), I[i])
+          * J[i] * Math.pow(tau(T) - 1.222, J[i] - 1);
+      return R * T * tau(T) * dg_tau;
+    }
+}
+
+// specific_isobaric_heat_capacity
+function cp_1(T, p)
+{
+  var dg_tt = 0.0;
+  with ( equation_3_1 )
+    {
+      for ( var i = 0; i < 34; i++)
+        dg_tt += n[i] * Math.pow( 7.1 - pi(p), I[i])
+          * J[i] * ( J[i] - 1) * Math.pow(tau(T) - 1.222, J[i] - 2);
+
+      return -R * tau(T) * tau(T) * dg_tt;
+    }
+}
+
+// specific isochoric heat capacity
+function cv_1(T, p)
+{
+  var dg_tt = 0.0;
+  var dg_pi = 0.0;
+  var dg_pt = 0.0;
+  var dg_pp = 0.0;
+  function sqr(x) { return x * x;}
+  
+  with ( equation_3_1)
+    {
+      for ( var i = 0; i < 34; i++)
+        {
+          dg_tt += n[i] * Math.pow( 7.1 - pi(p), I[i])
+            * J[i] * ( J[i] - 1) * Math.pow(tau(T) - 1.222, J[i] - 2);
+          dg_pi += -n[i] * I[i] * Math.pow(7.1 - pi(p), I[i] - 1)
+            * Math.pow(tau(T) - 1.222, J[i]);
+          dg_pt += -n[i] * I[i] * Math.pow(7.1 - pi(p), I[i] - 1)
+            * J[i] * Math.pow( pi(p) - 1.222, J[i] - 1);
+          dg_pp += n[i] * I[i] * (I[i] - 1) * Math.pow(7.1 - pi(p), I[i] - 2)
+            * Math.pow(tau(T) - 1.222, J[i]);
+        }
+      return R * (-sqr(tau(T)) * dg_tt + sqr(dg_pi - tau(T)*dg_pt)/dg_pp);
+    }
+}
+
+
+//REGION 2
+// Specific volume
+function v_2(T, p)
+{
+  var g0_pi;
+  var gr_pi = 0.0;
+  
+  with (equation_3_9)
+    {
+      g0_pi = 1/pi(p);
+    }
+  with (equation_3_10)
+    {
+      for (var i = 0; i < 43; i++)
+        gr_pi += n[i] * I[i] * Math.pow(pi(p), I[i] - 1)
+          *  Math.pow(tau(T) - 0.5, J[i]);
+      return R * T * pi(p) * (g0_pi + gr_pi) / p;
+    }
+}
+
+//Specific internal energy
+function u_2(T, p)
+{
+  var g0_tau = 0.0;
+  var gr_tau = 0.0;
+  var g0_pi;
+  var gr_pi = 0.0;
+  with (equation_3_9)
+    {
+      g0_pi = 1/pi(p);
+      for (var i = 0; i < 9; i++)
+        g0_tau += n[i] * J[i] * Math.pow(tau(T), J[i] - 1);
+    }
+  with (equation_3_10)
+    {
+      for (var i = 0; i < 43; i++)
+        {
+          gr_pi += n[i] * I[i] * Math.pow(pi(p), I[i] - 1)
+            *  Math.pow(tau(T) - 0.5, J[i]);
+          gr_tau += n[i] * Math.pow(pi(p), I[i])
+            * J[i] * Math.pow(tau(T) - 0.5, J[i] - 1);
+        }
+      return R * T * (tau(T)*(g0_tau+gr_tau) - pi(p)*(g0_pi+gr_pi)) ;
+    }     
+}
+
+function s_2(T, p)
+{
+  var g0 = Math.log(equation_3_9.pi(p));
+  var gr = 0.0;
+  var g0_tau = 0.0;
+  var gr_tau = 0.0;
+  with (equation_3_9)
+    {
+      for (var i = 0; i < 9; i++)
+        {
+          g0 += n[i] * Math.pow(tau(T), J[i]);
+          g0_tau += n[i] * J[i] * Math.pow(tau(T), J[i] - 1);
+        }
+    }
+  with (equation_3_10)
+    {
+      for (var i = 0; i < 43; i++)
+        {
+          gr += n[i] * Math.pow(pi(p), I[i])
+            *  Math.pow(tau(T) - 0.5, J[i]);
+          gr_tau += n[i] * Math.pow(pi(p), I[i])
+            * J[i] * Math.pow(tau(T) - 0.5, J[i] - 1);
+        }
+      return R * (tau(T)*(g0_tau+gr_tau) - (g0 +gr)) ;
+    }     
+}
+
+// specific enthalpy
+function h_2(T, p)
+{
+  var g0_tau = 0.0;
+  var gr_tau = 0.0;
+  with (equation_3_9)
+    {
+      for (var i = 0; i < 9; i++)
+        g0_tau += n[i] * J[i] * Math.pow(tau(T), J[i] - 1);
+    }
+  with (equation_3_10)
+    {
+      for (var i = 0; i < 43; i++)
+          gr_tau += n[i] * Math.pow(pi(p), I[i])
+            * J[i] * Math.pow(tau(T) - 0.5, J[i] - 1);
+      return R * T * tau(T) * ( g0_tau + gr_tau ) ;
+    }       
+}
+
+// specific isobaric heat capacity
+function cp_2(T, p)
+{
+  var g0_tt = 0.0;
+  var gr_tt = 0.0;
+  with (equation_3_9)
+    {
+      for (var i = 0; i < 9; i++)
+        g0_tt += n[i] * J[i] * (J[i] - 1) * Math.pow(tau(T), J[i] - 2);
+    }
+  with (equation_3_10)
+    {
+      for (var i = 0; i < 43; i++)
+        gr_tt += n[i] * Math.pow(pi(p), I[i]) * J[i] * (J[i] - 1)
+          * Math.pow(tau(T) - 0.5, J[i] - 2);
+      return -R * tau(T) * tau(T) * ( g0_tt + gr_tt ) ;
+    }       
+}
+
+// REGION 2,3
+
+// Auxiliary equation between Regions 2 and 3, Equ. 3.6 and Equ. 3.7
+var n23 = [ 0.34805185628969E+03, -0.11671859879975E+01,
+          0.10192970039326E-02,  0.57254459862746E+03, 0.13918839778870E+02];
+
+function p_B(T) // equation 3.6
+{
+  var n = n23;
+  return 1e6 * (n[0] + n[1] * T + n[2] * T * T );
+}
+
+function T_B(p) // equation 3.7
+{
+  var n = n23;
+  return  n[3] + Math.sqrt((p/1e6 - n[4])/n[2]);
+}  
+
+
+// REGION 3
+// pressure
+function p_3(T, rho)
+{
+  var dh_d;
+  with (equation_3_21)
+    {
+      dh_d = n[0]/delta(rho);
+      for (var i = 1; i < 40; i++)
+        dh_d += n[i] * I[i] * Math.pow(delta(rho), I[i] - 1)
+          * Math.pow(tau(T), J[i]);
+      return rho * R * T * delta(rho) * dh_d;
+    }
+}
+
+// density must be calculated iteratively with Newton method
+function rho_3(T, p)
+{
+  var densold, diffdens;
+  var dc = 322; // critical density in kg m^-33
+  var Tc = 647.096; //critical temperature in K
+  densold = 750; // a good downhill starting point
+  for (var j = 0; j < 1000; j++)
+    {
+      var dh_d;
+      var dh_dd;
+      with (equation_3_21)
+        {
+          dh_d = n[0] / delta(densold);
+          dh_dd = -n[0] * dc / densold / densold;
+          for ( var i = 1; i < 40; i ++)
+            {
+              dh_d += n[i] * I[i] * Math.pow(delta(densold), I[i] - 1)
+                * Math.pow(tau(T), J[i]);
+              dh_dd += n[i] * I[i] * (I[i]-1) /dc
+                * Math.pow(delta(densold), I[i] - 2) * Math.pow(tau(T), J[i]);
+            }
+        }
+      var derivprho = R * T / dc * (2 * densold * dh_d
+                                    + densold * densold * dh_dd);
+      var densnew = densold + (p - R * T * densold * densold / dc * dh_d )
+        / derivprho;
+      if (densnew < 0) // sanity check
+        densnew = 700;
+      var diffdens = Math.abs(densnew-densold)/densnew;
+      if ( diffdens < 0.0000000005)
+        return densnew;
+      densold = densnew;
+    }
+  alert("Accuracy problem: " + diffdens );
+  return densold;
+  return -1 ; // fault
+}
+
+// specific internal energy
+function u_3(T, rho)
+{
+  var dh_tau = 0.0;
+  with (equation_3_21)
+    {
+      for (var i = 1; i < 40; i++)
+        dh_tau += n[i] * Math.pow(delta(rho), I[i])
+          * J[i] * Math.pow(tau(T), J[i] - 1);
+      return R * T * tau(T) * dh_tau;
+    }
+}
+
+// specific entropy
+function s_3(T, rho)
+{
+  var dh;
+  var dh_tau = 0.0;
+  with (equation_3_21)
+    {
+      dh = n[0] * Math.log(delta(rho));
+      for (var i = 1; i < 40; i++)
+        {
+          dh += n[i] * Math.pow(delta(rho), I[i])
+            * Math.pow(tau(T), J[i]);
+          dh_tau += n[i] * Math.pow(delta(rho), I[i])
+            * J[i] * Math.pow(tau(T), J[i] - 1);
+        }
+      return R * (tau(T) * dh_tau - dh);
+    }
+}
+
+// specific enthalpy
+function h_3(T, rho)
+{
+  var dh_d;
+  var dh_tau = 0.0;
+  with (equation_3_21)
+    {
+      dh_d = n[0]/delta(rho);
+      for (var i = 1; i < 40; i++)
+        {
+          dh_d += n[i] * I[i] * Math.pow(delta(rho), I[i] - 1)
+            * Math.pow(tau(T), J[i]);
+          dh_tau += n[i] * Math.pow(delta(rho), I[i])
+            * J[i] * Math.pow(tau(T), J[i] - 1);
+        }
+      return R * T * (tau(T) * dh_tau + delta(rho) * dh_d);
+    }
+}
+
+// specific isochoric heat capacity
+function cv_3(T, rho)
+{
+  var dh_tt = 0.0;
+  with (equation_3_21)
+    {
+      for (var i = 1; i < 40; i++)
+        dh_tt += n[i] *  Math.pow(delta(rho), I[i] )
+          * J[i] * (J[i] - 1 ) * Math.pow(tau(T), J[i] - 2);
+      return -R * tau(T) * tau(T) * dh_tt;
+    }
+}
+
+
+// REGION 4
+// coefficients of equations 3.22 to 3.24
+var r4_coeff =  [ 0.11670521452767E+04,-0.72421316703206E+06,
+                -0.17073846940092E+02,  0.12020824702470E+05,
+                -0.32325550322333E+07,  0.14915108613530E+02,
+                -0.48232657361591E+04,  0.40511340542057E+06,
+                -0.23855557567849E+00,  0.65017534844798E+03];
+
+// saturation pressure
+function p_s(T)
+{
+  var T_reducing = 1;
+  var p_reducing = 1e6;
+  var n = r4_coeff;
+  var theta = T/T_reducing +  n[8]/((T/T_reducing)-n[9]);
+  var A = theta*theta + n[0] * theta + n[1];
+  var B = n[2] * theta*theta + n[3] * theta + n[4];
+  var C = n[5]*theta*theta + n[6] * theta + n[7];
+  function quad(x) { return x*x*x*x; }
+  return p_reducing*quad(2*C/(-B+Math.sqrt(B*B-4*A*C)));
+}
+
+
+// for region 3 parameter p_rho means density elsewere it means pressure
+function Region(v, rho, u, s, h, cp, cv, w)
+{
+  this.v =  v || function (T, p) { return null; } ;
+  this.rho = rho || function (T, p) { return null; } ;
+  this.u = u;
+  this.s = s;
+  this.h = h;
+  this.cp = cp || function (T, p_rho) { return null };
+  this.cv = cv || function (T, p_rho) { return null };
+  this.w = w || function (T, p_rho) { return null };
+  this.Out = function(T, p)
+  {
+    var p_rho = p;
+    var r = new String();
+    with (this)
+    {
+      if ( v(T, p) == null) // region3
+        {
+          p_rho = rho(T, p);
+          r = "\nrho = " + p_rho ;
+        }
+      else
+        r =  "\nv = " + v(T, p_rho) ;
+      r += "\nh = " + h(T, p_rho)/1000 
+        + "\nu = " + u(T, p_rho)/1000 
+        + "\ns = " + s(T, p_rho)/1000;
+      
+      if ( cp(T,p_rho) != null)
+        r += "\ncp = " + cp(T, p_rho)/1000;
+      if ( cv(T,p_rho) != null )
+        r += "\ncv = " + cv(T, p_rho)/1000;          
+    }
+    return r;
+  }
+}
+
+var region = new Array();
+region[1] = new Region(v_1, null, u_1, s_1, h_1, cp_1);
+region[2] = new Region(v_2, null, u_2, s_2, h_2, cp_2);
+region[3] = new Region(null, rho_3, u_3, s_3, h_3, null, cv_3);
+
+// returns region number for a given temperature and pressure
+function which_region(T, p)
+{
+ if (273.15 <= T && T <= 623.15 && p_s(T) <= p && p <= 100e6)
+   return 1;
+ else
+   if ( (273.15 <= T &&  T <= 623.15 &&  0 < p && p <= p_s(T))
+        || (623.15 < T  && T <= 863.15 && 0 < p && p <= p_B(T))
+        || (863.15 < T && T <= 1073.15 && 0 < p && p <= 100e6) )
+     return 2;
+   else
+     if ( 623.5 <= T && T <= T_B(p) && p_B(T) <= p && p <= 100e6)
+       return 3;
+
+
+ return 0; // out of range  
+}
+//以上代码源自http://www.lecad.fs.uni-lj.si/~leon/research/iapws-if97/IAPWS97.html
+//对作者致以最真挚谢意
+
+//以下代码基于热工院江浩的vb移植而成,对原作者致以最真挚谢意
+var zw1=new Array( 6824.687741,-5.42206367300000E+02,-2.09666620500000E+04,3.94128678700000E+04,
+                  -6.73327773900000E+04,9.90238102800000E+04,-1.09391177400000E+05,8.59084166700000E+04,
+                  -4.51116874200000E+04,1.41813892600000E+04,-2.01727111300000E+03,7.98269271700000E+00,
+                  -2.61657184300000E-02,1.52241179000000E-03,2.28427905400000E-02,2.42164700300000E+02,
+                   1.26971608800000E-10,2.07483832800000E-07,2.17402035000000E-08,1.10571049800000E-09,
+                   1.29344193400000E+01,1.30811907200000E-05,6.04762633800000E-14,0.00000000000000E+00);
+var zw2=new Array( 0.8438375405,0.000536216,1.72,0.073422785,0.04975887,0.65371543,0.00000115,0.000015108,
+                   0.14188,7.002753165,0.000299528,0.204);
+var zw3=new Array( 523.5718623, -2693.088365, 5745.984054, -6508.211677, 4126.607219, -1388.522425, 193.6587558,0);
+var zw4=new Array( 0.08565182058, -0.6547711697, 0.4330662834, -54.38923329, 28.5606796, 0, 0, 0);
+var zw5=new Array( 0 ,-0.093996781,1.5549155,-17.517633,-0.33890382,0.027468338);
+var zw6=new Array( 1454.13000000000000,-13790.15900000000000,52171.90900000000000,
+                    -98354.96000000000000,92218.23000000000000,-33669.27000000000000);
+var zw7=new Array( 15.74373327000000,-34.17061978000000,19.31380707000000,
+                   0.76333333300000,16.83599274000000,4.26032114800000);
+var h=new Array( 1, 0.978197, 0.579829, -0.202354); 
+
+var zw8=new Array(8,3);
+var zw9=new Array(8,3);
+var zwz=new Array(3,3);
+var zws=new Array(3,3);
+var h2=new Array(6,6);
+ zw8[0]=[0.06670375918,1.388983801,0]        
+ zw8[1]=[0.08390104828, 0.02614670893, -0.03373439453]
+ zw8[2]=[0.4520918904, 0.1069036614,  0,]
+ zw8[3]=[-0.5975336707, -0.08847535804, 0]            
+ zw8[4]=[0.5958051609,  -0.5159303373,  0.2075021122] 
+ zw8[5]=[0.1190610271,  -0.09867174132,  0]           
+ zw8[6]=[0.1683998803,  -0.05809438001,  0]          
+ zw8[7]=[0.006552390126,  0.0005710218649, 0]  
+ zw9[0]=[13,3,0]
+ zw9[1]=[18, 2,1]
+ zw9[2]=[18,10,0]
+ zw9[3]=[25,14,0]
+ zw9[4]=[32,28,24]
+ zw9[5]=[12,11,0]
+ zw9[6]=[24,18,0]
+ zw9[7]=[24,14,0]
+ zwz[0]=[0.4006073948,0,0];
+ zwz[1]=[0.08636081627,0,0];
+ zwz[2]=[-0.8532322921,0.3460208816,0]; 
+ zws[0]=[14, 0, 0];
+ zws[1]=[19, 0, 0];
+ zws[2]=[54, 27,0]; 
+ h2[0]=[0.5132047, 0.2151778, -0.2818107,0.1778064,-0.0417661, 0,0];
+ h2[1]=[0.3205656,0.7317883,-1.070786,0.460504, 0,-0.01578386, 0];
+ h2[2]=[0,1.241044,-1.263184, 0.2340379,0,0,0];
+ h2[3]=[0,1.476783,0,-0.4924179,0.1600435,0,-0.003629481];
+ h2[4]=[-0.7782567,0,0,0,0,0,0];
+ h2[5]=[0.1885447, 0,0,0,0,0,0];
+
+function myRound(srcDat,digLen){
+  return Math.round(srcDat*Math.pow(10,digLen))/Math.pow(10,digLen);
+}
+
+function T_Pjy(P){ 
+  var pa,pb,ta,T;
+  pa = 10.1972 * P;
+ ta = 100 * Math.pow(pa , 0.25);
+ pb=P_Tjy(ta);
+ pb = 10.1972 * pb;
+  while(Math.abs((pa - pb) / pa) > 0.000005 )
+ {
+  ta = ta + 25 * (pa - pb) /Math.pow( pb , 0.75);
+   pb=P_Tjy(ta);
+   pb = 10.1972 * pb;
+  }
+   T=ta;
+return T;
+}
+
+function P_Tjy(T){
+var zt,z1,z2,z3,z4,P;
+  zt = (T + 273.15) / 647.3;
+  z1 = 1 - zt;
+  z2 = (((64.23285504 - 118.9646225 * z1) * z1 - 168.1706546) * z1 - 26.08023696) * z1;
+  z2 = (z2 - 7.691234564) * z1;
+  z3 = (20.9750676 * z1 + 4.16711732) * z1 + 1;
+  z4 = z1 / (1000000000 * z1 * z1 + 6);
+  P=225.56 * Math.exp(z2 / z3 / zt - z4);
+  P = 0.0980665 * P;
+return P;
+}
+
+function __PTjy(P,T,outLs){
+var PP;
+  PP = 10.1972 * P;
+  if(PP<10.1972*P_Tjy(T)){
+     __PT_Gjy(PP,T,outLs);
+  }else{
+   __PT_Fjy(PP,T,outLs);
+  }
+return true;
+}
+
+
+function __PT_Gjy(P, T,outLs) {//注意，直接调用时，压力（MPa）要乘以10.1972 
+     pa=P; ta=T;
+     zp = pa / 225.56;
+     zt = (ta + 273.15) / 647.3;
+     z0 = zw7[0] + (zw7[1] + zw7[2] * zt) * zt;
+     ZZ = zp * Math.pow((zp / z0) , 10);
+     z1 = zw7[1] + 2 * zw7[2] * zt;
+     z2 = Math.exp(zw7[3] * (1 - zt));
+     z3 = 0; z4 = 0; z5 = 0;
+     for (IZ=0;IZ<=4;IZ++){
+       z6 = 0; z7 = 0;
+       for (JZ=0;JZ<=2;JZ++){
+     z8 = Math.pow(z2 , zw9[IZ][ JZ]);
+     z6 = z6 + zw8[IZ][ JZ] * z8;
+     z7 = z7 + zw8[IZ][ JZ] * (1 + zw7[3] * zw9[IZ][ JZ] * zt) * z8;
+     z3 = z3 + zw7[3] * Math.pow(zp , (IZ + 1)) * zw9[IZ][ JZ] * zw8[IZ][ JZ] * z8;
+       }    
+       z4 = z4 + z6 * (IZ + 1) * Math.pow(zp , IZ);
+       z5 = z5 + z7 * Math.pow(zp , (IZ + 1));
+     }
+     z8 = 0;
+     for (IZ=0;IZ<=2;IZ++){
+       z6 = 0; z9 = 0;
+       for (JZ=0;JZ<=2;JZ++){
+     z6 = z6 + zw8[IZ + 5][ JZ] * Math.pow(z2 , zw9[IZ + 5][ JZ]);
+     z9 = z9 + zwz[IZ][ JZ] * Math.pow(z2 , zws[IZ][ JZ]);
+       }
+       ZS = Math.pow(zp , (IZ + 3));
+       z8 = z8 + z6 * (IZ + 4) * ZS / Math.pow((1 + z9 * zp * ZS) , 2);
+     }
+     z6 = 0;
+     if( zp >= 0.1){
+     for (IZ=0;IZ<=6;IZ++){
+       z6 = z6 * z2 + zw3[IZ];
+     }
+     z6 = 11 * z6 * Math.pow((zp / z0) , 10);
+     }     
+      vg = 0.00317 * (zw7[5] * zt / zp - z4 - z8 + z6)
+     z4 = 0;
+     for (IZ=0;IZ<=4;IZ++){
+       z4 = z4 * zt + (3 - IZ) * zw4[IZ];
+     }
+     z6 = 0;
+     if (zp >= 0.005){
+     for (IZ=0;IZ<=2;IZ++){
+       z8 = 0;
+       for (JZ=0;JZ<=2;JZ++){
+     z7 = 0; z9 = 0;
+     for (KZ=0;KZ<=2;KZ++){
+       z7 = z7 + zws[IZ][ KZ] * zwz[IZ][ KZ] * Math.pow(z2 , zws[IZ][ KZ]);
+       z9 = z9 + zwz[IZ][ KZ] * Math.pow(z2 , zws[IZ][ JZ]);
+     }
+     ZS = Math.pow(zp , (IZ + 3));
+     ZV = Math.pow(z2 , zw9[IZ + 5][ JZ]) * (1 + (zw9[IZ + 5][ JZ] - z7 / (z9 + 1 / ZS)) * zw7[3] * zt);
+     z8 = z8 + ZV * zw8[IZ + 5][ JZ];
+       }
+       z6 = z6 + z8 / (z9 + 1 / zp / ZS);
+     }
+     }
+     z8 = 0;
+     if( zp >= 0.1){
+     for (IZ=0;IZ<=6;IZ++){
+       z8 = z8 * z2 + zw3[IZ] * (1 + zt * (10 + z1 / z0 + zw7[3] * (6 - IZ)));
+     }
+     }
+     ZH = zw7[4] * zt - z4 - z5 - z6 + z8 * ZZ;
+     hg = ZH * 16.74796981;
+     z4 = 0;
+     for (IZ=0;IZ<=4;IZ++){
+       z4 = z4 * zt + (4 - IZ) * zw4[IZ];
+     }
+     z5 = 0;
+     if( zp >= 0.005){
+     for (IZ=0;IZ<=2;IZ++){
+       z6 = 0;
+       for (JZ=0;JZ<=2;JZ++){
+     z7 = 0; z8 = 0;
+     for (KZ=0;KZ<=2;KZ++){
+       z9 = Math.pow(z2 , zws[IZ][ KZ]) * zwz[IZ][ KZ];
+       z7 = z7 + z9 * zws[IZ][ KZ];
+       z8 = z8 + z9;
+     }
+     ZS = 1 / Math.pow(zp , (IZ + 4)) + z8;
+     z6 = z6 + (zw9[IZ + 5][ JZ] - z7 / ZS) * zw8[IZ + 5][ JZ] * Math.pow(z2 , zw9[IZ + 5][ JZ]);
+       }
+       z5 = z5 + z6 / ZS;
+     }
+     }
+     z5 = z5 * zw7[3];
+     z6 = 0;
+     if (zp >= 0.1){
+     for (IZ=0;IZ<=6;IZ++){
+       z6 = z6 * z2 + (10 * z1 / z0 + zw7[3] * (6 - IZ)) * zw3[IZ];
+     }
+     z6 = z6 * ZZ;
+     }
+     ZS = zw7[4] * Math.log(zt) - zw7[5] * Math.log(zp) - z4 / zt - z3 - z5 + z6;
+     sg = ZS * 0.025873582;
+     vg=vg;
+     hg=4.1868*hg;
+     sg=4.1868*sg;  
+     outLs[0]=myRound(vg,8);
+     outLs[1]=myRound(hg,8);
+     outLs[2]=myRound(sg,8);  
+   return true;
+}
+
+function __PT_Fjy(P, T,outLs) {//注意，直接调用时，压力（MPa）要乘以10.1972 
+     pa=P;
+     ta=T;
+     zp = pa / 225.56;
+     zt = (ta + 273.15) / 647.3;
+     z2 = Math.pow(zt ,11);
+     z3 = z2 * Math.pow(zt , 8);
+     z6 = zt * zt;
+     z0 = 1 - zw2[0] * z6 - zw2[1] / Math.pow(z6 , 3);
+     z9 = zw1[22] * Math.pow(zp, 4) / z3 / zt;     
+     z1 = z0 + Math.pow(zw2[2] * z0 * z0 - 2 * zw2[3] * zt + 2 * zw2[4] * zp,0.5);
+     z7 = Math.pow(z1 , 5 / 17);
+
+     ZV = zw1[11] * zw2[4] / z7 + zw1[12] + zw1[13] * zt + zw1[14] * z6;
+     ZV = ZV + zw1[15] * Math.pow((zw2[5] - zt), 10) + zw1[16] / (zw2[6] + z3);
+     ZV = ZV - (zw1[17] + (2 * zw1[18] + 3 * zw1[19] * zp) * zp) / (zw2[7] + z2);
+     ZV = ZV - zw1[20] * z3 * (zw2[8] / zt + zt) * (zw2[10] - 3 / Math.pow((zw2[9] + zp) , 4));
+     ZV = ZV + 3 * zw1[21] * (zw2[11] - zt) * zp * zp + 4 * z9 / zp;
+  
+     vf = 0.00317 * ZV;
+     z8 = ((zw1[19] * zp + zw1[18]) * zp + zw1[17]) * zp / Math.pow((zw2[7] + z2), 2);
+     z4 = 6 * zw2[1] / Math.pow(zt, 7) - 2 * zw2[0] * zt;
+     ZB = zw1[21] *Math.pow(zp, 3);
+     ZC = zw1[15] * Math.pow((zw2[5] - zt) , 9);
+     ZH = 0;
+     for(IZ = 9;IZ>-1; IZ--){
+       ZH = ZH * zt + (IZ - 1) * zw1[IZ + 1];
+     }
+     ZH = zw1[11] * (z1 * (17 * (z1 / 29 - z0 / 12) + 5 * zt * z4 / 12) + zw2[3] * zt) / z7 - ZH;
+     z5 = zw1[12] - zw1[14] * z6 + ZC * (9 * zt + zw2[5]);
+     ZA = zw1[16] / Math.pow((zw2[6] + z3) , 2);
+     z5 = z5 + (zw2[6] + 20 * z3) * ZA;
+     ZV = (1 / Math.pow((zw2[9] + zp) , 3 )+ zw2[10] * zp) * zw1[20] * z3;
+     ZH = ZH + zw1[0] * zt + z5 * zp - (zw2[2] - 1) * zt * z0 * z4 / z7 * zw1[11] - z8 * (12 * z2 + zw2[7]);
+     ZH = ZH + (17 * zw2[8] + 19 * z6) * ZV / zt + zw2[11] * ZB + 21 * z9;
+     hf = ZH * 16.74796981;
+     ZS = 0;
+     for(JZ = 9;JZ>0;JZ--){
+       ZS = ZS * zt + JZ * zw1[JZ + 1];
+     }
+     ZS = zw1[0] * Math.log(zt) - ZS + zw1[11] * ((5 * z1 / 12 - (zw2[2] - 1) * z0) * z4 + zw2[3]) / z7;
+     ZS = ZS + zp * (10 * ZC - zw1[13] - 2 * zw1[14] * zt + 19 * ZA * z3 / zt) - 11 * z2 * z8 / zt;
+     ZS = ZS + (18 * zw2[8] / z6 + 20) * ZV + ZB + 20 * z9 / zt;
+     sf = ZS * 0.025873582;
+     hf= 4.1868*hf;
+     sf= 4.1868*sf;
+     vf=vf;
+     outLs[0]=myRound(vf,8);
+     outLs[1]=myRound(hf,8);
+     outLs[2]=myRound(sf,8);     
+    return true;
+}
+
+function __PSjy(P,S,outLs){//mzs 2010-7-25于河曲，采用二分法迭代
+    var T0,T1,T;
+    var Tb=T_Pjy(P);
+    var OLf=new Array(3);
+    var OLg=new Array(3);
+    var Stmp,Sf,Sg;
+    __PT_Fjy(P*10.1972,Tb,OLf);
+    Sf=OLf[2];
+    __PT_Gjy(P*10.1972,Tb,OLg);
+    Sg=OLg[2];
+    if(Sf<S && S<Sg){//处于湿蒸汽状态
+      var kk=(S-Sf)/(Sg-Sf);
+      outLs[0]=OLf[0]+kk*(OLg[0]-OLf[0]); 
+      outLs[1]=OLf[1]+kk*(OLg[1]-OLf[1]); 
+      outLs[2]=Tb;
+      return true;
+    }
+    if(Sf>S){
+      T0=0;T1=Tb;
+    }else if(Sg<S){
+      T0=Tb;T1=800;
+    }
+    T=(T0+T1)/2;
+    __PTjy(P,T,outLs);
+    Stmp=outLs[2];
+    for (var j = 0; j < 1000; j++)
+    {
+     if(Math.abs(S-Stmp)<1e-8){
+       outLs[2]=T;
+       return true;
+     }
+     if(Stmp>S)
+        T1=T;
+     else
+        T0=T;
+     T=(T0+T1)/2;
+    __PTjy(P,T,outLs);
+    Stmp=outLs[2];
+    }
+    outLs[0]="NAN";    outLs[1]="NAN";    outLs[2]="NAN";
+    return false;
+  }
+
+
+//end 基于江浩的vb代码移植
+
+//以下部分为mzs编写方便调用的基于的IF97函数，2010-7-25 完成于山西河曲 
+
+  function P_T97(T){ //已知饱和温度求饱和压力
+    return p_s(T+273.15)/1e6;
+  }
+
+  function T_P97(P){ //已知饱和压力求饱和温度
+    var T0=273.15;
+    var T1=273.15+374;
+    var T=(T0+T1)/2;
+    var PP=P*1e6;
+    var Ptmp=p_s(T);
+    for (var j = 0; j < 1000; j++)
+    {
+     if(Math.abs(PP-Ptmp)<1e-5) 
+       return T-273.15
+     if(Ptmp>PP)
+        T1=T;
+     else
+        T0=T;
+     T=(T0+T1)/2;
+     Ptmp=p_s(T);
+    }
+    return "NaN";
+  }
+
+//end
+
+//以下部分为mzs编写的人机界面接口子程序，2010-7-25,26 完成于山西河曲
+  var PRECalTyp=-1;
+  var WaspTypLs=new Array("","IF97","IF67","JY_F");
+  var CalTypLs=new Array("","PT","Pb","Tb","PS","PH","TS","TH","HS","效率");
+  var in1Ls=new Array("","P:","P:","P:","P:","P:","T:","T:","H:","P1:");
+  var in2Ls=new Array("","T:","T:","T:","S:","H:","S:","H:","S:","T1:");
+
+  function selWaspKind(kind){
+   document.WaspFrm.waspLable.value=kind;
+  }//end function
+ 
+  function selInKind(kind){
+    var ii
+    document.WaspFrm.calLable.value=kind;
+    ii=parseInt(kind);
+    if(ii==9){
+     in3lable.style.display= "inline"
+     in4lable.style.display= "inline"
+    }
+    else{
+     in3lable.style.display= "none"
+     in4lable.style.display= "none"
+    }
+    in1lable.innerText=in1Ls[ii]; 
+    in2lable.innerText=in2Ls[ii];        
+    return true;
+  }//end function
+  
+  function calWasp(){
+    var outLs=new Array(3);
+    var in1,in2,in3,in4,calTyp,waspTyp,sss="";      
+    calTyp=parseInt(document.WaspFrm.calLable.value);
+    waspTyp=parseInt(document.WaspFrm.waspLable.value);
+    in1=parseFloat(document.WaspFrm.in1Text.value);
+    in2=parseFloat(document.WaspFrm.in2Text.value);
+    in3=parseFloat(document.WaspFrm.in3Text.value);
+    in4=parseFloat(document.WaspFrm.in4Text.value);
+    switch(calTyp){
+     case 1:
+       __PTjy(in1,in2,outLs);
+      for(j=0;j<3;j++) 
+        outLs[j]=myRound(outLs[j],3);
+      if(calTyp!=PRECalTyp){
+         sss="标识\tP\tT\tv\tH\tS\n";
+         PRECalTyp=calTyp;
+      }
+      sss+=WaspTypLs[waspTyp]+":"+CalTypLs[calTyp]+"\t"
+                                     +in1+"\t"+in2+"\t"+outLs[0]+"\t"+outLs[1]+"\t"+outLs[2]+"\n";
+      document.WaspFrm.dispTxt.value+=sss;
+      break;
+     case 2:
+       outLs[0]=T_Pjy(in1);
+       outLs[0]=myRound(outLs[0],3);
+       if(calTyp!=PRECalTyp){
+         sss="标识\tP\tT\n";
+         PRECalTyp=calTyp;
+       }
+      sss+=WaspTypLs[waspTyp]+":"+CalTypLs[calTyp]+"\t"
+                                     +in1+"\t"+outLs[0]+"\n";
+      document.WaspFrm.dispTxt.value+=sss;
+      break;      
+     case 3:
+       outLs[0]=P_Tjy(in2);
+       outLs[0]=myRound(outLs[0],3);
+       if(calTyp!=PRECalTyp){
+         sss="标识\tT\tP\n";
+         PRECalTyp=calTyp;
+       }
+      sss+=WaspTypLs[waspTyp]+":"+CalTypLs[calTyp]+"\t"
+                                     +in2+"\t"+outLs[0]+"\n";
+      document.WaspFrm.dispTxt.value+=sss;
+      break;
+     case 4:
+       __PSjy(in1,in2,outLs);  
+     for(j=0;j<3;j++) 
+        outLs[j]=myRound(outLs[j],3);
+      if(calTyp!=PRECalTyp){
+         sss="标识\tP\tS\tv\tH\tT\n";
+         PRECalTyp=calTyp;
+      }
+      sss+=WaspTypLs[waspTyp]+":"+CalTypLs[calTyp]+"\t"
+                                     +in1+"\t"+in2+"\t"+outLs[0]+"\t"+outLs[1]+"\t"+outLs[2]+"\n";
+      document.WaspFrm.dispTxt.value+=sss;
+      break;
+    case 9:
+     var dH,dH0,eta,s1,h1,h2,hs2;
+       __PTjy(in1,in2,outLs);
+       h1=outLs[1]; s1=outLs[2];  
+       __PTjy(in3,in4,outLs);
+       h2=outLs[1];
+       __PSjy(in3,s1,outLs);
+       hs2=outLs[1];
+       dH=h1-h2;  dH0=h1-hs2; eta=dH/dH0*100;
+       in1=myRound(in1,3); in2=myRound(in2,3); in3=myRound(in3,3); in4=myRound(in4,3);
+       eta=myRound(eta,3); dH=myRound(dH,3); dH0=myRound(dH0,3);
+       if(calTyp!=PRECalTyp){
+         sss="标识\tP1\tT1\tP2\tT2\tη\tΔH\tΔH0\n";
+         PRECalTyp=calTyp;
+       }
+       sss+=WaspTypLs[waspTyp]+":"+CalTypLs[calTyp]+"\t"
+                                     +in1+"\t"+in2+"\t"+in3+"\t"+in4+"\t"+eta+"\t"+dH+"\t"+dH0+"\n";
+      document.WaspFrm.dispTxt.value+=sss;
+      break;
+     default:
+      break;
+    }
+  }//end function
+
+  function reSet(){
+    document.WaspFrm.in1Text.value="";
+    document.WaspFrm.in2Text.value="";
+    document.WaspFrm.in3Text.value="";
+    document.WaspFrm.in4Text.value="";
+    document.WaspFrm.dispTxt.value="";
+    PRECalTyp=-1;
+    return true;
+  }//end function
+//end mzs内容
+
+</script>
+</head>
+
+<body>
+<a href="\index.html">homepage</a>
+<h1>水蒸汽性质及汽机缸效率计算</h1>
+
+<form name=WaspFrm>
+选择水蒸汽公式标准：
+   <select name=waspKind onChange="selWaspKind(waspKind.options[waspKind.selectedIndex].value)">
+      <option value=1 > IAPWS-IF97基准
+      <option value=2 > Steam IF67基准 
+      <option value=3 selected> 经验公式基准 
+    </select><br>
+    <input type=hidden name=waspLable value=3>
+选择计算类型：
+   <select name=inKind onChange="selInKind(inKind.options[inKind.selectedIndex].value)">
+      <option value=1 > 已知P,T
+      <option value=2 > 已知饱和P
+      <option value=3 > 已知饱和T
+      <option value=4 > 已知P,S
+      <option value=5 > 已知P,H
+      <option value=6 > 已知T,S
+      <option value=7 > 已知T,H
+      <option value=8 > 已知H,S
+      <option value=9 > 求缸效率
+    </select><br>
+    <input type=hidden name=calLable value=1>
+    <Span id="in1lable">P:</span><input type=text name="in1Text" size=8>;  
+    <Span id="in2lable">T:</span><input type=text name="in2Text" size=8>;<br>
+    <Span id="in3lable" style=display:none>P2:<input type=text name="in3Text" size=8>;</span>
+    <Span id="in4lable" style=display:none>T2:<input type=text name="in4Text" size=8>;<br></span>
+
+    <input type=button onclick="calWasp()" name="CalBtn" value="计算" >&nbsp&nbsp&nbsp
+    <input type=button onclick="reSet()" name="resetBtn" value="重置" >
+    <br>
+    <textarea name=dispTxt rows=20 cols=40 style="overflow-x:auto;overflow-y:scroll" wrap="off" readonly="readonly"></textarea>
+ </form>
+
+注:T—℃ ；P—MPa；H—kJ/kg；<br>
+S—kJ/kg.K；v—m<sup>3</sup>/kg；c<sub>p</sub>—kJ/kg.K ；η—% <br>
+<font color=blue>本计算程序完全免费，代码见源文件，但所有权归mzs@jxzss所有</font><br>
+<font color=red>欢迎与我联系,以进一步完善：mengzesam@126.com</font>
+</body> </html>
+
+
