@@ -32,7 +32,7 @@ $$e^{\pi{i}}+1=0$$
 ||||\\(\beta\\)|
 |--|\\(\Gamma\\)||\\(\gamma\\)|
 ||\\(\Delta\\)|--|\\(\delta\\)|
-||||\\(\epsilon$ $\varepsilon$ |
+||||\\(\epsilon\\) \\(\varepsilon\\)|
 ||||\\(\zeta\\)|
 ||||\\(\eta\\)|
 ||\\(\Theta\\)|--|\\(\theta\\)|
@@ -48,7 +48,7 @@ $$e^{\pi{i}}+1=0$$
 ||\\(\Sigma\\)|--|\\(\sigma\\)|
 ||||\\(\tau\\)|
 ||\\(\Upsilon\\)|--|\\(\upsilon\\)|
-||\\(\Phi\\)|--|\\(\phi$  $\varphi\\)|
+||\\(\Phi\\)|--|\\(\phi\\)  \\(\varphi\\)|
 ||||\\(\chi\\)|
 ||\\(\Psi\\)|--|\\(\psi\\)|
 ||\\(\Omega\\)||\\(\omega\\)|
