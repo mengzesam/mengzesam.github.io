@@ -1,16 +1,8 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
  
-$$x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}$$
- 
- https://mengzesam.github.io/
+
+$$e^{\pi{i}}+1=0$$
   
-  \\[\sum_i\\]
-  
-  - **一 数学符号及公式**
- 	+ + 正文(inline)中的LaTeX公式用\$...\$定义,如下示例：
- 	+ + 要显示在单独行:`$$...$$`
-  
- 		
 |**输入**| **显示**|
 |--|--|
 |`$\sum_{i=0}^N\int_{a}^{b}g(t,i)\text{d}t$`  |\\(\sum_{i=0}^N\int_{a}^{b}g(t,i)\text{d}t\\)|
