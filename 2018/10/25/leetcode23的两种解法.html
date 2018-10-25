@@ -136,7 +136,7 @@ struct ListNode* heapExtractMin(struct ListNode* lists[],int n){
   <li>solution2：</li>
 </ul>
 
-<p>把k个links分为上下两半，上半的第0，1，2…分别和下半的第0，1，2…进行合并成为新的link，保存在kingks数组的第0，1，2…里，如果links数为奇数，中间那个link不动，这样规模减少一半，然后递归进行</p>
+<p>把k个links分为上下两半，上半的第0，1，2…分别和下半的第0，1，2…进行合并成为新的link，保存在lists数组的第0，1，2…里，如果lists数为奇数，中间那个link不动，这样规模减少一半，然后递归进行</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
  * Definition for singly-linked list.
