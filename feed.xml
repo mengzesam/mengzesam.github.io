@@ -1,76 +1,65 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-10-25T21:08:25+08:00</updated><id>/</id><title type="html">$$e^{\pi{i}}+1=0$$</title><subtitle>记录生活点滴，追忆时光</subtitle><entry><title type="html">Leetcode23的两种解法</title><link href="/2018/10/25/leetcode23%E7%9A%84%E4%B8%A4%E7%A7%8D%E8%A7%A3%E6%B3%95.html" rel="alternate" type="text/html" title="Leetcode23的两种解法" /><published>2018-10-25T00:00:00+08:00</published><updated>2018-10-25T00:00:00+08:00</updated><id>/2018/10/25/leetcode23%E7%9A%84%E4%B8%A4%E7%A7%8D%E8%A7%A3%E6%B3%95</id><content type="html" xml:base="/2018/10/25/leetcode23%E7%9A%84%E4%B8%A4%E7%A7%8D%E8%A7%A3%E6%B3%95.html">&lt;p&gt;problem:&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.&lt;/p&gt;
-&lt;/blockquote&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-10-25T21:16:33+08:00</updated><id>/</id><title type="html">$$e^{\pi{i}}+1=0$$</title><subtitle>记录生活点滴，追忆时光</subtitle><entry><title type="html">Leetcode23的两种解法</title><link href="/2018/10/25/leetcode23%E7%9A%84%E4%B8%A4%E7%A7%8D%E8%A7%A3%E6%B3%95.html" rel="alternate" type="text/html" title="Leetcode23的两种解法" /><published>2018-10-25T00:00:00+08:00</published><updated>2018-10-25T00:00:00+08:00</updated><id>/2018/10/25/leetcode23%E7%9A%84%E4%B8%A4%E7%A7%8D%E8%A7%A3%E6%B3%95</id><content type="html" xml:base="/2018/10/25/leetcode23%E7%9A%84%E4%B8%A4%E7%A7%8D%E8%A7%A3%E6%B3%95.html">&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML&quot; async=&quot;&quot;&gt;&lt;/script&gt;
 
-&lt;blockquote&gt;
-
-  &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; Definition for singly-linked list.
- struct ListNode {
-      int val;
-      struct ListNode *next;
-  };
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;  &lt;/div&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;problem:
+Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.&lt;/p&gt;
 
 &lt;p&gt;example:&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;Input:
-[
+&lt;pre&gt;&lt;code class=&quot;language-Input:&quot;&gt;[
   1-&amp;gt;4-&amp;gt;5,
   1-&amp;gt;3-&amp;gt;4,
   2-&amp;gt;6
 ]
-Output: 1-&amp;gt;1-&amp;gt;2-&amp;gt;3-&amp;gt;4-&amp;gt;4-&amp;gt;5-&amp;gt;6&lt;/p&gt;
-&lt;/blockquote&gt;
+Output: 1-&amp;gt;1-&amp;gt;2-&amp;gt;3-&amp;gt;4-&amp;gt;4-&amp;gt;5-&amp;gt;6
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;solution 1:
-利用最小优化队列
-```
-/**&lt;/li&gt;
-  &lt;li&gt;Definition for singly-linked list.&lt;/li&gt;
-  &lt;li&gt;struct ListNode {&lt;/li&gt;
-  &lt;li&gt;int val;&lt;/li&gt;
-  &lt;li&gt;struct ListNode *next;&lt;/li&gt;
-  &lt;li&gt;};
- &lt;em&gt;/
-void buildHeap(struct ListNode&lt;/em&gt; lists[],int n);
-struct ListNode* heapExtractMin(struct ListNode* lists[],int n);
-struct ListNode* mergeKLists(struct ListNode** lists, int size) {
- int n=size;
- int i=0;
- while(i&amp;lt;n){
-     if(lists[i]==NULL){
-         n–;
-         lists[i]=lists[n];
-     }else
-         i++;
- }
- if(n==0) return NULL;
- if(n==1) return lists[0];
- buildHeap(lists,n); &lt;br /&gt;
- struct ListNode* ans=lists[0];
- struct ListNode* p=ans;
- while(1){
-     if(lists[0]-&amp;gt;next==NULL){
-         heapExtractMin(lists,n);
-         n–;
-     }else{
-         lists[0]=lists[0]-&amp;gt;next;
-         minHeapify(lists,n,0);
-     } 
-     if(n==0)break;
-     p-&amp;gt;next=lists[0];
-     p=p-&amp;gt;next;
- }
- return ans;   &lt;br /&gt;
-}&lt;/li&gt;
+  &lt;li&gt;solution 1:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;void minHeapify(struct ListNode* lists[],int n,int i){
-    int l=2&lt;em&gt;i+1;
-    int r=2&lt;/em&gt;i+2;
+&lt;p&gt;利用最小优化队列&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+void buildHeap(struct ListNode* lists[],int n);
+struct ListNode* heapExtractMin(struct ListNode* lists[],int n);
+struct ListNode* mergeKLists(struct ListNode** lists, int size) {
+    int n=size;
+    int i=0;
+    while(i&amp;lt;n){
+        if(lists[i]==NULL){
+            n--;
+            lists[i]=lists[n];
+        }else
+            i++;
+    }
+    if(n==0) return NULL;
+    if(n==1) return lists[0];
+    buildHeap(lists,n);   
+    struct ListNode* ans=lists[0];
+    struct ListNode* p=ans;
+    while(1){
+        if(lists[0]-&amp;gt;next==NULL){
+            heapExtractMin(lists,n);
+            n--;
+        }else{
+            lists[0]=lists[0]-&amp;gt;next;
+            minHeapify(lists,n,0);
+        } 
+        if(n==0)break;
+        p-&amp;gt;next=lists[0];
+        p=p-&amp;gt;next;
+    }
+    return ans;     
+}
+
+void minHeapify(struct ListNode* lists[],int n,int i){
+    int l=2*i+1;
+    int r=2*i+2;
     int smallest=i;
     if(l&amp;lt;n &amp;amp;&amp;amp; (lists[l]-&amp;gt;val)&amp;lt;(lists[i]-&amp;gt;val))
         smallest=l;
@@ -84,7 +73,7 @@ struct ListNode* mergeKLists(struct ListNode** lists, int size) {
     }
 }
 void buildHeap(struct ListNode* lists[],int n){
-    for(int i=n/2-1;i&amp;gt;=0;i–)
+    for(int i=n/2-1;i&amp;gt;=0;i--)
         minHeapify(lists,n,i);
 }
 struct ListNode* heapExtractMin(struct ListNode* lists[],int n){
@@ -94,28 +83,30 @@ struct ListNode* heapExtractMin(struct ListNode* lists[],int n){
     lists[0]=lists[n-1];
     minHeapify(lists,n-1,0);
     return ret;
-}&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-- solution2：把k个links分为上下两半，上半的第0，1，2...分别和下半的第0，1，2...进行合并成为新的link，保存在kingks数组的第0，1，2...里，如果links数为奇数，中间那个link不动，这样规模减少一半，然后递归进行
-    
+}
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;/**&lt;/p&gt;
+
 &lt;ul&gt;
-  &lt;li&gt;Definition for singly-linked list.&lt;/li&gt;
-  &lt;li&gt;struct ListNode {&lt;/li&gt;
-  &lt;li&gt;int val;&lt;/li&gt;
-  &lt;li&gt;struct ListNode *next;&lt;/li&gt;
-  &lt;li&gt;};
- &lt;em&gt;//&lt;/em&gt;
-struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {&lt;em&gt;/
-struct ListNode&lt;/em&gt; mergeKLists(struct ListNode** lists, int size) {
- if(size&amp;lt;1) return NULL;
- mergeHalf(lists,size);
- return lists[0];
-}&lt;/li&gt;
+  &lt;li&gt;solution2：&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;void mergeHalf(struct ListNode** lists,int size){
+&lt;p&gt;把k个links分为上下两半，上半的第0，1，2…分别和下半的第0，1，2…进行合并成为新的link，保存在kingks数组的第0，1，2…里，如果links数为奇数，中间那个link不动，这样规模减少一半，然后递归进行&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ *//*
+struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {*/
+struct ListNode* mergeKLists(struct ListNode** lists, int size) {
+    if(size&amp;lt;1) return NULL;
+    mergeHalf(lists,size);
+    return lists[0];
+}
+
+void mergeHalf(struct ListNode** lists,int size){
     if(size&amp;lt;=1) return;
     int mid=size/2;
     int gap=(size%2?mid+1:mid);
@@ -157,7 +148,7 @@ struct ListNode&lt;/em&gt; mergeKLists(struct ListNode** lists, int size) {
     else
         mergeHalf(lists,mid);
 }
-```&lt;/p&gt;</content><author><name></name></author><summary type="html">problem: Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.</summary></entry><entry><title type="html">各种排序算法</title><link href="/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html" rel="alternate" type="text/html" title="各种排序算法" /><published>2018-10-19T00:00:00+08:00</published><updated>2018-10-19T00:00:00+08:00</updated><id>/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95</id><content type="html" xml:base="/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html">&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML&quot; async=&quot;&quot;&gt;&lt;/script&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">各种排序算法</title><link href="/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html" rel="alternate" type="text/html" title="各种排序算法" /><published>2018-10-19T00:00:00+08:00</published><updated>2018-10-19T00:00:00+08:00</updated><id>/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95</id><content type="html" xml:base="/2018/10/19/%E5%90%84%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html">&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML&quot; async=&quot;&quot;&gt;&lt;/script&gt;
 
 &lt;ul&gt;
   &lt;li&gt;insert sort
