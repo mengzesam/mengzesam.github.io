@@ -46,64 +46,64 @@ s:${myRound(ans.s,3)};w:${myRound(ans.w,3)};Cp:${myRound(ans.cp,3)};Cv:${myRound
             return ss;
         }
         function calWasp(){
-            var in1,in2,in3,in4,calTyp,waspTyp,sss="";
-            calTyp=parseInt(document.WaspFrm.calLable.value);
+            var in1,in2,in3,in4,calType,waspTyp,sss="";
+            calType=parseInt(document.WaspFrm.calLable.value);
             waspTyp=parseInt(document.WaspFrm.waspLable.value);
             in1=parseFloat(document.WaspFrm.in1Text.value);
             in2=parseFloat(document.WaspFrm.in2Text.value);
             in3=parseFloat(document.WaspFrm.in3Text.value);
             in4=parseFloat(document.WaspFrm.in4Text.value);
             var ans;
-            switch(calTyp){
+            switch(calType){
                 case 1:
                     ans=myH2097.pt2all(in1,in2);
-                    sss=ans2string(ans,CalTypLs[calTyp]);
+                    sss=ans2string(ans,CalTypLs[calType]);
                     break;
                 case 2:
                     ans=myH2097.p2t(in1);
                     sss=
-`类型${caltype},region:4,p:${in1},t:${myRound(ans,3)}`;
+`类型${CalTypLs[calType]},region:4,p:${in1},t:${myRound(ans,3)}`;
                     break;
                 case 3:
                     ans=myH2097.t2p(in2);
                     sss=
-`类型${caltype},region:4,p:${in2},t:${myRound(ans,3)}`;
+`类型${CalTypLs[calType]},region:4,p:${myRound(ans,3)},t:${in2}`;
                     break;
                 case 4:
                     ans=myH2097.ps2all(in1,in2);
-                    sss=ans2string(ans,CalTypLs[calTyp]);
+                    sss=ans2string(ans,CalTypLs[calType]);
                     break;
                 case 5:
                     ans=myH2097.ph2all(in1,in2);
-                    sss=ans2string(ans,CalTypLs[calTyp]);
+                    sss=ans2string(ans,CalTypLs[calType]);
                     break;
                 case 6:
                     ans=myH2097.pv2all(in1,in2);
-                    sss=ans2string(ans,CalTypLs[calTyp]);
+                    sss=ans2string(ans,CalTypLs[calType]);
                     break;
                 case 7:
                     ans=myH2097.ts2all(in1,in2);
-                    sss=ans2string(ans,CalTypLs[calTyp]);
+                    sss=ans2string(ans,CalTypLs[calType]);
                     break;
                 case 8:
                     ans=myH2097.th2all(in1,in2);
-                    sss=ans2string(ans,CalTypLs[calTyp]);
+                    sss=ans2string(ans,CalTypLs[calType]);
                     break;
                 case 9:
                     ans=myH2097.tv2all(in1,in2);
-                    sss=ans2string(ans,CalTypLs[calTyp]);
+                    sss=ans2string(ans,CalTypLs[calType]);
                     break;
                 case 10:
                     ans=myH2097.vh2all(in1,in2);
-                    sss=ans2string(ans,CalTypLs[calTyp]);
+                    sss=ans2string(ans,CalTypLs[calType]);
                     break;
                 case 11:
                     ans=myH2097.vs2all(in1,in2);
-                    sss=ans2string(ans,CalTypLs[calTyp]);
+                    sss=ans2string(ans,CalTypLs[calType]);
                     break;
                 case 12:
                     ans=myH2097.hs2all(in1,in2);
-                    sss=ans2string(ans,CalTypLs[calTyp]);
+                    sss=ans2string(ans,CalTypLs[calType]);
                     break;
                 case 13:
                     var dH,dH0,eta,s1,h1,h2,hs2;
@@ -117,13 +117,13 @@ s:${myRound(ans.s,3)};w:${myRound(ans.w,3)};Cp:${myRound(ans.cp,3)};Cv:${myRound
                     in1=myRound(in1,3); in2=myRound(in2,3); in3=myRound(in3,3); in4=myRound(in4,3);
                     eta=myRound(eta,3); dH=myRound(dH,3); dH0=myRound(dH0,3);
                     sss=
-`类型${caltype},p1:${in1},t1:${in2},p2:${in3},t2:${in4},
+`类型${CalTypLs[calType]},p1:${in1},t1:${in2},p2:${in3},t2:${in4},
 ΔH:${dH},ΔH0:${dH0},η:${eta}`;
                     break;
                 default:
                     break;
             }
-            sss+="\n";
+		    sss+="\n";
             document.WaspFrm.dispTxt.value+=sss;
         }//end function
         function reSet(){
