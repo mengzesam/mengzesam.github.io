@@ -38,21 +38,24 @@
         }//end function
 
         function ans2string(ans,caltype){
+            let diglen=6;
             let ss=
-`类型${caltype},region:${ans.region}
-p:${myRound(ans.p,3)};t:${myRound(ans.t,3)};v:${myRound(ans.v,5)};h:${myRound(ans.h,3)};
-s:${myRound(ans.s,3)};w:${myRound(ans.w,3)};Cp:${myRound(ans.cp,3)};Cv:${myRound(ans.cv,3)}
+`已知${caltype},region:${ans.region}
+p:${myRound(ans.p,diglen)};t:${myRound(ans.t,diglen)};v:${myRound(ans.v,diglen)};
+h:${myRound(ans.h,diglen)};s:${myRound(ans.s,diglen)};w:${myRound(ans.w,diglen)};
+Cp:${myRound(ans.cp,diglen)};Cv:${myRound(ans.cv,diglen)}
 `;
             if(ans.region==4){
-                ss+=";x:"+myRound(ans.x,3);
+                ss+=";x:"+myRound(ans.x,diglen);
             }
             if(ans.ans2){
                 let ans_=ans.ans2;
                 ss+="\n";
                 ss+=
 `\t ans2,region:${ans_.region}
-p:${myRound(ans_.p,3)};t:${myRound(ans_.t,3)};v:${myRound(ans_.v,5)};h:${myRound(ans_.h,3)};
-s:${myRound(ans_.s,3)};w:${myRound(ans_.w,3)};Cp:${myRound(ans_.cp,3)};Cv:${myRound(ans.cv,3)}
+p:${myRound(ans_.p,diglen)};t:${myRound(ans_.t,diglen)};v:${myRound(ans_.v,diglen)};
+h:${myRound(ans_.h,diglen)};s:${myRound(ans_.s,diglen)};w:${myRound(ans_.w,diglen)};
+Cp:${myRound(ans_.cp,diglen)};Cv:${myRound(ans.cv,diglen)}
 `;
             }
             if(ans.ans3){
@@ -60,8 +63,9 @@ s:${myRound(ans_.s,3)};w:${myRound(ans_.w,3)};Cp:${myRound(ans_.cp,3)};Cv:${myRo
                 ss+="\n";
                 ss+=
 `\t ans3,region:${ans_.region}
-p:${myRound(ans_.p,3)};t:${myRound(ans_.t,3)};v:${myRound(ans_.v,5)};h:${myRound(ans_.h,3)};
-s:${myRound(ans_.s,3)};w:${myRound(ans_.w,3)};Cp:${myRound(ans_.cp,3)};Cv:${myRound(ans.cv,3)}
+p:${myRound(ans_.p,diglen)};t:${myRound(ans_.t,diglen)};v:${myRound(ans_.v,diglen)};
+h:${myRound(ans_.h,diglen)};s:${myRound(ans_.s,diglen)};w:${myRound(ans_.w,diglen)};
+Cp:${myRound(ans_.cp,diglen)};Cv:${myRound(ans.cv,diglen)}
 `;
             }
             return ss;
@@ -83,12 +87,12 @@ s:${myRound(ans_.s,3)};w:${myRound(ans_.w,3)};Cp:${myRound(ans_.cp,3)};Cv:${myRo
                 case 2:
                     ans=myH2097.p2t(in1);
                     sss=
-`类型${CalTypLs[calType]},region:4,p:${in1},t:${myRound(ans,5)}`;
+`求饱和温度,region:4,p:${in1},t:${myRound(ans,5)}`;
                     break;
                 case 3:
                     ans=myH2097.t2p(in2);
                     sss=
-`类型${CalTypLs[calType]},region:4,p:${myRound(ans,5)},t:${in2}`;
+`类型饱和压力,region:4,p:${myRound(ans,5)},t:${in2}`;
                     break;
                 case 4:
                     ans=myH2097.ps2all(in1,in2);
@@ -135,10 +139,11 @@ s:${myRound(ans_.s,3)};w:${myRound(ans_.w,3)};Cp:${myRound(ans_.cp,3)};Cv:${myRo
                     ans=myH2097.ps2h(in3,s1);
                     hs2=ans.value;
                     dH=h1-h2;  dH0=h1-hs2; eta=dH/dH0*100;
-                    in1=myRound(in1,3); in2=myRound(in2,3); in3=myRound(in3,3); in4=myRound(in4,3);
-                    eta=myRound(eta,3); dH=myRound(dH,3); dH0=myRound(dH0,3);
+                    in1=myRound(in1,6); in2=myRound(in2,6); in3=myRound(in3,6); in4=myRound(in4,6);
+                    eta=myRound(eta,6); dH=myRound(dH,6); dH0=myRound(dH0,6);
                     sss=
-`类型${CalTypLs[calType]},p1:${in1},t1:${in2},p2:${in3},t2:${in4},
+`求${CalTypLs[calType]},
+p1:${in1},t1:${in2},p2:${in3},t2:${in4},
 ΔH:${dH},ΔH0:${dH0},η:${eta}`;
                     break;
                 default:
@@ -220,7 +225,7 @@ s:${myRound(ans_.s,3)};w:${myRound(ans_.w,3)};Cp:${myRound(ans_.cp,3)};Cv:${myRo
     <input type="button" onclick="reSet()" name="resetBtn" value="重置">
     其中w为音速
     <br>
-    <textarea name="dispTxt" rows="20" cols="40" style="overflow-x:auto;overflow-y:scroll" wrap="off" readonly="readonly"></textarea>
+    <textarea name="dispTxt" rows="20" cols="45" style="overflow-x:auto;overflow-y:scroll" wrap="off" readonly="readonly"></textarea>
 </form>
 </body>
 </html>
