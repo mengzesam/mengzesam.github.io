@@ -903,8 +903,8 @@ var svg=d3.select("#svg").append("svg")
         if(selInputMethod==1){
             var point=d3.mouse(this);
             var t=tScale.invert(point[0]-margin.left);
-            var W=WScale.invert(point[1]-margin.top);
-            
+            var W=WScale.invert(point[1]-margin.top);            
+			Patm=parseFloat(d3.select('#inPatm').property('value'));
             if(t<t_min || t>t_max || W<W_min || W>W_max) return;
 			var W_overPhiMax=TPhiP2W(t,phi_max,Patm);
 			if(W>W_overPhiMax) return;
@@ -1033,6 +1033,7 @@ d3.select('#textinput').selectAll('input[type=text]')
             var param2=parseFloat(d3.select('#inParam2').property('value'));
             var p1Str=inputTypeList[selectIdx].param1;
             var p2Str=inputTypeList[selectIdx].param2;
+			Patm=parseFloat(d3.select('#inPatm').property('value'));
             if(p1Str=='t'){
                 var W=param2;
                 if(p2Str=='W'){
